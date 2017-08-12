@@ -39,6 +39,7 @@ In order to draw a single line on the left and right lanes, I wrote a new functi
 ![png](test_images_output/final_vanila.png)
 
 *Image sample processed with new draw_line_extend() method:*
+
 ![png](test_images_output/final_single_line.png)
 
 ### 2. Shortcomings with the current pipeline
@@ -46,25 +47,42 @@ In order to draw a single line on the left and right lanes, I wrote a new functi
 After using the pipeline described above on the challenge video, the result is not satisf as good as the result from the other test clips. I found out the reason is the that yellow lane lines on the left side is hard to detect by Canny edge detection method due to it's low contrast with the grey color of the road. 
 
 *Original image from challenge video:*
+
 ![png](test_images_output/challenge_01_orginal.png)
+
 *The yellow lane line on the left is hard to distinguish with road:*
+
 ![png](test_images_output/challenge_02_gray.png)
 
 ### 3. How I improved  my pipeline
 To solve this shortcoming of my pipeline, instead of converting the image from RGB to grayscale on the begining I tried to convert it to HSV and HLS color space. And I found out the HLS worked the best to distinguish the yellow and white lane lines. 
+
 ![png](test_images_output/challenge_03_hls.png)
+
 And then use cv.inRange() to filter only the yellow and white color. 
+
 ![png](test_images_output/challenge_04_color_selection.png)
-The rest is all the same as the previous pipeline.    
+
+The rest is all the same as the previous pipeline.
+
 *graysclae:*
+
 ![png](test_images_output/challenge_05_gray.png)
+
 *blur:*
+
 ![png](test_images_output/challenge_06_blur.png)
+
 *edge detection:*
+
 ![png](test_images_output/challenge_07_canny.png)
+
 *region selection:*
+
 ![png](test_images_output/challenge_08_region.png)
+
 *hough space and final result:*
+
 ![png](test_images_output/challenge_09_final.png)
 
 ### 4. Other potential shortcoming on my pipeline that has to be improved to make the pipeline more robust. 
