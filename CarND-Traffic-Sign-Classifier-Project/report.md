@@ -99,6 +99,7 @@ Validation Accuracy: 0.827
 **Round 3:**  Lenet + More Dropout (0.7) 
 
 Validation Accuracy: 0.763
+
 **Round 4:** Normalization method 1  + Lenet +  Dropout (0.8) 
 
 Then I tried to normalize the input data before I feed it to Lenet, it worked pretty well.  The method of normalization is as follows:
@@ -158,5 +159,6 @@ From above we can see that my trained model and do very good confident predictio
 --------------------
 ### Summary
 In general my trained model can do the classification job on the given traffic signs pretty well.
+
 The reason of the bad result of the one traffic sing is due to the skewed distribution of the number of traffic signs in the training dataset.  To solve this issue, I assume that further actions such as picture augmentation of the picture and generation of fake data to increase the number of some rare traffic sings are needed. 
 
