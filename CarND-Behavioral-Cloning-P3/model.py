@@ -15,17 +15,29 @@ with open('{}/driving_log.csv'.format(datafolder)) as csvfile:
 images = []
 measurements = []
 for line in lines:
-    source_path = line[0]
-    filename = source_path.split('/')[-1]
-    current_path = '{}/{}/'.format(datafolder, imgfolder) + filename
-    image = cv2.imread(current_path)
-    images.append(image)
+    for i in range(3):
+        source_path = line[i]
+        filename = source_path.split('/')[-1]
+        current_path = '{}/{}/'.format(datafolder, imgfolder) + filename
+        image = cv2.imread(current_path)
+        images.append(image)
 
-    measurement = float(line[3])
-    measurements.append(measurement)
+        measurement = float(line[3])
+        if i == 1:
+            measurement += 0.2
+        if i == 2:
+            measurement -= 0.2
+        measurements.append(measurement)
 
-X_train = np.array(images)
-y_train = np.array(measurements)
+augmented_images, augmented_measurements = [], []
+for image, measurement in zip(images, measurements):
+    augmented_images.append(image)
+    augmented_measurements.append(measurement)
+    augmented_images.append(cv2.flip(image, 1))
+    augmented_measurements.append(measurement * -1.0)
+
+X_train = np.array(augmented_images)
+y_train = np.array(augmented_measurements)
 
 print(X_train.shape)
 print(y_train.shape)
@@ -36,12 +48,14 @@ print(y_train.shape)
 # cv2.destroyAllWindows()
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Conv2D, Cropping2D, Lambda, MaxPooling2D
+from keras.layers import Flatten, Dense, Cropping2D, Lambda
 from keras.layers.convolutional import Convolution2D
+from keras.layers.pooling import MaxPooling2D
 
 input_shape = X_train.shape[1:]
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=input_shape))
+model.add(Cropping2D(cropping=((70, 25), (0, 0))))
 model.add(Convolution2D(6, 5, 5, activation="relu"))
 model.add(MaxPooling2D())
 model.add(Convolution2D(6, 5, 5, activation="relu"))
