@@ -5,6 +5,7 @@ from sklearn.utils import shuffle
 
 samples = []
 
+# Where to find the camera images
 datafolder = 'data_1'
 imgfolder = 'IMG'
 
@@ -16,7 +17,7 @@ with open('{}/driving_log.csv'.format(datafolder)) as csvfile:
 from sklearn.model_selection import train_test_split
 train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
-
+# The function to get a generator object
 def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1:
@@ -34,12 +35,14 @@ def generator(samples, batch_size=32):
                     image = cv2.imread(current_path)
                     images.append(image)
                     angle = float(batch_sample[3])
+                    # When on the left camera image, steering a lit bit more to the right
                     if i == 1:
                         angle += 0.2
+                    # When on the right camera image, steering a lit bit more to the left
                     if i == 2:
                         angle -= 0.2
                     angles.append(angle)
-
+            # Flip the images and angels to create more input samples to help to generalize the model
             augmented_images, augmented_angles = [], []
             for image, angle in zip(images, angles):
                 augmented_images.append(image)
@@ -51,24 +54,23 @@ def generator(samples, batch_size=32):
             y_train = np.array(augmented_angles)
             yield shuffle(X_train, y_train)
 
-# img = X_train[10]
-# cv2.imshow('image', img)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Cropping2D, Lambda
-from keras.layers.convolutional import Convolution2D, Conv2D
-from keras.layers.pooling import MaxPooling2D
+from keras.layers.convolutional import Conv2D
 
+# from keras.layers.pooling import MaxPooling2D
+
+# Considering the total number of smaples will be timed by 6,
+# I make the batch sise as 32, which means 32 * 6 = 192 image inputs for each batch
 batch_size = 32
 
-
+# Create two generator objects for inputs of training and validation
 train_generator = generator(train_samples, batch_size=batch_size)
 validation_generator = generator(validation_samples, batch_size=batch_size)
 
 input_shape = (160, 320, 3)
+
+# Here I implemented the nVidia pipeline to train my network
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=input_shape))
 model.add(Cropping2D(cropping=((70, 25), (0, 0))))
