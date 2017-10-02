@@ -2,6 +2,7 @@ import csv
 import cv2
 import numpy as np
 from sklearn.utils import shuffle
+from matplotlib import pyplot as plt
 
 samples = []
 
@@ -14,10 +15,18 @@ with open('{}/driving_log.csv'.format(datafolder)) as csvfile:
     for line in reader:
         samples.append(line)
 
+angles_hist = [float(sample[3]) for sample in samples]
+plt.hist(angles_hist)
+# plt.show()
+plt.savefig('angels_hist.jpg')
+plt.clf()
+
 from sklearn.model_selection import train_test_split
 train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
 # The function to get a generator object
+
+
 def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1:
@@ -54,6 +63,7 @@ def generator(samples, batch_size=32):
             y_train = np.array(augmented_angles)
             yield shuffle(X_train, y_train)
 
+
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Cropping2D, Lambda
 from keras.layers.convolutional import Conv2D
@@ -86,11 +96,24 @@ model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit_generator(train_generator,
-                    steps_per_epoch=len(train_samples) / batch_size,
-                    validation_data=validation_generator,
-                    epochs=5,
-                    validation_steps=len(validation_samples) / batch_size)
+history_object = model.fit_generator(train_generator,
+                                     steps_per_epoch=len(train_samples) / batch_size,
+                                     validation_data=validation_generator,
+                                     epochs=5,
+                                     validation_steps=len(validation_samples) / batch_size)
 
 model.save('model.h5')
+
+print(history_object.history.keys())
+print(history_object.history['loss'])
+print(history_object.history['val_loss'])
+plt.plot(history_object.history['loss'])
+plt.plot(history_object.history['val_loss'])
+plt.title('model mean squared error loss')
+plt.ylabel('mean squared error loss')
+plt.xlabel('epoch')
+plt.legend(['training set', 'validation set'], loc='upper right')
+plt.savefig('loss_graph.jpg')
+
+
 exit()
