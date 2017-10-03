@@ -35,7 +35,7 @@ class SimplePIController:
 
     def update(self, measurement):
         # proportional error
-        self.error = self.set_point - measurement
+        self.error = self.set_point - (measurement)
 
         # integral error
         self.integral += self.error

@@ -16,6 +16,9 @@ The goals / steps of this project are the following:
 [image3]: ./report/recover_2.jpg "Recover_2"
 [image4]: ./report/recover_3.jpg "Recover_3"
 [image5]: ./report/flip.jpg "Flip"
+[image6]: ./report/angles_hist.jpg "Angels Histogram"
+[image7]: ./report/loss_graph.jpg "Loss Graph"
+
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -124,3 +127,7 @@ I used this training data for training the model. The validation set helped dete
 I created two generators (one for training and one for validation) two retrieve all the input images
 without the need to read all the input images into memory at one time to avoid crashing my laptop.
 Detail implementation can be found in code lines 21-55. 
+
+Below is two graphics to show the distribution of the angles in the training dataset and the loss. 
+![alt text][image6]
+![alt text][image7]
